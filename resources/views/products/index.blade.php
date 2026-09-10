@@ -4,12 +4,27 @@
 
 @section('content')
 <div class="container-fluid">
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+ 
+
     <!-- Statistics Cards -->
     <div class="row mb-4">
         <div class="col-lg-3 col-6">
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>{{ $products->count() }}</h3>
+                    <h3>{{ $products->total() }}</h3>
                     <p>Total Produits</p>
                 </div>
                 <div class="icon">
@@ -21,7 +36,7 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>{{ $products->where('quantity', '>', 0)->count() }}</h3>
+                    <h3>{{ $productsInStock }}</h3>
                     <p>Produits en Stock</p>
                 </div>
                 <div class="icon">
@@ -33,7 +48,7 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>{{ $products->where('quantity', '<=', 10)->count() }}</h3>
+                    <h3>{{ $productsLowStock }}</h3>
                     <p>Stock Faible</p>
                 </div>
                 <div class="icon">
@@ -45,7 +60,7 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-danger">
                 <div class="inner">
-                    <h3>{{ $products->where('quantity', 0)->count() }}</h3>
+                    <h3>{{ $productsOutOfStock }}</h3>
                     <p>Rupture de Stock</p>
                 </div>
                 <div class="icon">
@@ -55,7 +70,24 @@
             </div>
         </div>
     </div>
-
+   <div class="card card-outline card-success mb-3">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-file-csv mr-2"></i>Importer les produits depuis un CSV</h3>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('products.import') }}" method="POST" enctype="multipart/form-data" class="form-inline">
+                @csrf
+                <input type="file" name="file" class="form-control mr-2" accept=".csv,.txt" required>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-upload mr-1"></i>Importer le CSV
+                </button>
+            </form>
+            <small class="form-text text-muted mt-2">
+                Colonnes attendues : Nom, Description, Catégorie, Unité, Prix unitaire, Qté en stock et Qté seuil.
+                Les catégories et unités absentes seront créées automatiquement.
+            </small>
+        </div>
+    </div>
     <!-- Search and Filter Section -->
     <div class="row mb-3">
         <div class="col-12">
@@ -119,7 +151,7 @@
                                  <th><i class="fas fa-money-bill mr-1"></i>Prix Unit</th>
                                 <th><i class="fas fa-cubes mr-1"></i>Qté</th>
                                 <th><i class="fas fa-info-circle mr-1"></i>Statut</th>
-                                <th><i class="fas fa-calendar mr-1"></i>Créé le</th>
+                               <!--- <th><i class="fas fa-calendar mr-1"></i>Créé le</th>-->
                                 <th><i class="fas fa-cogs mr-1"></i>Actions</th>
                             </tr>
                         </thead>
@@ -151,17 +183,17 @@
                                             <span class="badge badge-success">
                                                 <i class="fas fa-check-circle mr-1"></i>En stock
                                             </span>
-                                        @elseif($product->quantity == $product->min_qte)
+                                        @elseif($product->quantity < $product->min_qte)
                                             <span class="badge badge-warning">
                                                 <i class="fas fa-exclamation-triangle mr-1"></i>Stock faible
                                             </span>
-                                        @else
+                                        @elseif($product->quantity == 0)
                                             <span class="badge badge-danger">
                                                 <i class="fas fa-times-circle mr-1"></i>Rupture
                                             </span>
                                         @endif
                                     </td>
-                                    <td>{{ $product->created_at->format('d/m/Y') }}</td>
+                                  <!---  <td>{{ $product->created_at->format('d/m/Y') }}</td>--->
                                     <td>
                                         <div class="btn-group btn-group-sm">
                                             <a href="{{ route('products.show', $product) }}" class="btn btn-info mr-1" title="Voir">
@@ -205,7 +237,7 @@
                                         Affichage de {{ $products->firstItem() }} à {{ $products->lastItem() }} sur {{ $products->total() }} produits
                                     </small>
                                 </div>
-                                <div>
+                                <div class="d-flex justify-content-center mt-3">
                                     {{ $products->links() }}
                                 </div>
                             </div>

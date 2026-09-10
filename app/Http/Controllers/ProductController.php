@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Exports\ProductsExport;
+use App\Imports\ProductsImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Category;
 use App\Models\AchatProduct;
 use App\Models\Unite;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class ProductController extends Controller
 {
@@ -22,15 +25,19 @@ class ProductController extends Controller
         if ($request->has('search') && !empty($request->search)) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
-
+        $productsInStock = Product::where('quantity', '>', 0)->count();
+       $productsLowStock = Product::whereColumn('quantity', '<', 'min_qte')
+                                    ->where('quantity', '>', 0)
+                                    ->count();
+        $productsOutOfStock = Product::where('quantity', 0)->count();
         // Filter by stock status
         if ($request->has('stock_status') && !empty($request->stock_status)) {
             switch ($request->stock_status) {
                 case 'in_stock':
-                    $query->where('quantity', '>', 10);
+                    $query->where('quantity', '>', 0);
                     break;
                 case 'low_stock':
-                    $query->where('quantity', '>', 0)->where('quantity', '<=', 10);
+                    $query->whereColumn('quantity', '<', 'min_qte')->where('quantity', '>', 0);
                     break;
                 case 'out_of_stock':
                     $query->where('quantity', 0);
@@ -38,8 +45,28 @@ class ProductController extends Controller
             }
         }
 
-        $products = $query->paginate(15);
-        return view('products.index', compact('products'));
+        $products = $query->paginate(20)->withQueryString();
+        return view('products.index', compact('products','productsInStock','productsLowStock','productsOutOfStock'));
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:5120',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request) {
+                Excel::import(new ProductsImport, $request->file('file'));
+            });
+        } catch (InvalidArgumentException $exception) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['file' => $exception->getMessage()]);
+        }
+
+        return redirect()->route('products.index')
+            ->with('success', 'Produits importés avec succès. Les catégories et unités manquantes ont été créées.');
     }
 
     /**

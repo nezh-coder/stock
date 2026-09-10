@@ -41,6 +41,8 @@ Route::middleware('auth')->group(function () {
      
    Route::get('products/inventaire', [ProductController::class, 'inventaire'])
     ->name('products.inventaire');
+    Route::post('products/import', [ProductController::class, 'import'])
+        ->name('products.import');
     Route::get('categories', [CategoryController::class, 'index'])
     ->name('categories.index');
  
