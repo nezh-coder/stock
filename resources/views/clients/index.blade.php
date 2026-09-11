@@ -57,7 +57,24 @@ use Illuminate\Support\Str;
             </div>
         </div>
     </div>
-
+      <div class="card card-outline card-success mb-3">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-file-csv mr-2"></i>Importer les clients depuis un CSV</h3>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('clients.import') }}" method="POST" enctype="multipart/form-data" class="form-inline">
+                @csrf
+                <input type="file" name="file" class="form-control mr-2" accept=".csv,.txt" required>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-upload mr-1"></i>Importer le CSV
+                </button>
+            </form>
+            <small class="form-text text-muted mt-2">
+                Colonnes attendues : Nom, Description, Catégorie, Unité, Prix unitaire, Qté en stock et Qté seuil.
+                Les catégories et unités absentes seront créées automatiquement.
+            </small>
+        </div>
+    </div>
     <!-- Search and Filter Section -->
     <div class="row mb-3">
         <div class="col-12">
@@ -119,8 +136,8 @@ use Illuminate\Support\Str;
                                 <th><i class="fas fa-user mr-1"></i>Nom</th>
                                 <th><i class="fas fa-phone mr-1"></i>Téléphone</th>
                                 <th><i class="fas fa-envelope mr-1"></i>Email</th>
-                                <th><i class="fas fa-id-card mr-1"></i>ICE</th>
-                                <th><i class="fas fa-map-marker-alt mr-1"></i>Adresse</th>
+                                <!---  <th><i class="fas fa-id-card mr-1"></i>ICE</th>
+                              <th><i class="fas fa-map-marker-alt mr-1"></i>Adresse</th>-->
                                 <th><i class="fas fa-euro-sign mr-1"></i>Crédit</th>
                                <!--- <th><i class="fas fa-calendar mr-1"></i>Créé le</th>
                                --> <th><i class="fas fa-cogs mr-1"></i>Actions</th>
@@ -145,14 +162,14 @@ use Illuminate\Support\Str;
                                             <span class="text-muted">-</span>
                                         @endif
                                     </td>
-                                    <td>
+                                    <!---   <td>
                                         <span class="badge badge-secondary">{{ $client->ice }}</span>
                                     </td>
-                                    <td>
+                                 <td>
                                         <span title="{{ $client->adresse }}">
                                             <i class="fas fa-map-marker-alt text-muted mr-1"></i>{{ Str::limit($client->adresse, 30) }}
                                         </span>
-                                    </td>
+                                    </td> -->
                                     <td>
                                         @if($client->credit > 1000)
                                             <span class="badge badge-danger">{{ number_format($client->credit, 2) }} €</span>

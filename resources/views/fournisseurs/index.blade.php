@@ -103,7 +103,24 @@ use Illuminate\Support\Str;
             </div>
         </div>
     </div>
-
+  <div class="card card-outline card-success mb-3">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-file-csv mr-2"></i>Importer les fournisseurs depuis un CSV</h3>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('fournisseurs.import') }}" method="POST" enctype="multipart/form-data" class="form-inline">
+                @csrf
+                <input type="file" name="file" class="form-control mr-2" accept=".csv,.txt" required>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-upload mr-1"></i>Importer le CSV
+                </button>
+            </form>
+            <small class="form-text text-muted mt-2">
+                Colonnes attendues : Nom, Description, Catégorie, Unité, Prix unitaire, Qté en stock et Qté seuil.
+                Les catégories et unités absentes seront créées automatiquement.
+            </small>
+        </div>
+    </div>
     <!-- Fournisseurs Table -->
     <div class="row">
         <div class="col-12">
@@ -141,12 +158,12 @@ use Illuminate\Support\Str;
                                         <strong>{{ $fournisseur->name }}</strong>
                                     </td>
                                     <td>
-                                        <i class="fas fa-phone text-muted mr-1"></i>{{ $fournisseur->tel }}
+                                        {{ $fournisseur->tel }}
                                     </td>
                                     <td>
                                         @if($fournisseur->email)
                                             <a href="mailto:{{ $fournisseur->email }}" class="text-primary">
-                                                <i class="fas fa-envelope mr-1"></i>{{ $fournisseur->email }}
+                                                {{ $fournisseur->email }}
                                             </a>
                                         @else
                                             <span class="text-muted">-</span>
@@ -157,7 +174,7 @@ use Illuminate\Support\Str;
                                     </td>
                                     <td>
                                         <span title="{{ $fournisseur->adresse }}">
-                                            <i class="fas fa-map-marker-alt text-muted mr-1"></i>{{ Str::limit($fournisseur->adresse, 30) }}
+                                           {{ Str::limit($fournisseur->adresse, 30) }}
                                         </span>
                                     </td>
                                     <td>

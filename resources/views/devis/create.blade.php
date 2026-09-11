@@ -169,8 +169,8 @@
                         <div class="mb-3">
                             <label for="status" class="form-label">Statut</label>
                             <select name="status" id="status" class="form-control" required>
-                                <option value="brouillon" {{ old('status') == 'brouillon' ? 'selected' : '' }}>Brouillon</option>
-                                <option value="envoye" {{ old('status') == 'envoye' ? 'selected' : '' }}>Envoyé</option>
+                               <!--- <option value="brouillon" {{ old('status') == 'brouillon' ? 'selected' : '' }}>Brouillon</option>
+                               --> <option value="envoye" {{ old('status') == 'envoye' ? 'selected' : '' }}>Envoyé</option>
                                 <option value="accepte" {{ old('status') == 'accepte' ? 'selected' : '' }}>Accepté</option>
                                 <option value="refuse" {{ old('status') == 'refuse' ? 'selected' : '' }}>Refusé</option>
                             </select>

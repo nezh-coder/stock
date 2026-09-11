@@ -56,11 +56,15 @@ Route::post('categories/import', [CategoryController::class, 'import'])
     ->name('products.inventaire');*/
 
  Route::resource('products', \App\Http\Controllers\ProductController::class);
+  Route::post('clients/import', [ClientController::class, 'import'])
+        ->name('clients.import');
      Route::resource('clients', \App\Http\Controllers\ClientController::class);
     Route::get('/api/products/{id}/last-purchase-price', [\App\Http\Controllers\Api\ProductController::class, 'lastPurchasePrice']);
         Route::get('products/{id}/movement', [\App\Http\Controllers\ProductController::class, 'movement'])->name('products.movement');
     Route::get('/api/products/{id}/info', [\App\Http\Controllers\Api\ProductInfoController::class, 'info']);
     Route::resource('fournisseurs', \App\Http\Controllers\FournisseurController::class);
+    Route::post('fournisseurs/import', [FournisseurController::class, 'import'])
+        ->name('fournisseurs.import');
      Route::post('bon-com-achats/{bon_com_achat}/transfer', [App\Http\Controllers\BonComAchatController::class, 'transfer'])->name('bon-com-achats.transfer'); 
     Route::resource('bon-com-achats', \App\Http\Controllers\BonComAchatController::class);
    

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Models\Fournisseur;
+use App\Imports\FournisseursImport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class FournisseurController extends Controller
 {
@@ -107,5 +110,26 @@ class FournisseurController extends Controller
         $fournisseur->delete();
 
         return redirect()->route('fournisseurs.index')->with('success', 'Fournisseur supprimé avec succès!');
+    }
+
+
+     public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:5120',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request) {
+                Excel::import(new FournisseursImport, $request->file('file'));
+            });
+        } catch (InvalidArgumentException $exception) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['file' => $exception->getMessage()]);
+        }
+
+        return redirect()->route('fournisseurs.index')
+            ->with('success', 'Fournisseurs importés avec succès.');
     }
 }

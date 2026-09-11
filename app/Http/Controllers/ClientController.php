@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Models\Client;
+use App\Imports\ClientsImport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ClientController extends Controller
 {
@@ -106,5 +109,23 @@ class ClientController extends Controller
         return redirect()->route('clients.index')->with('success', 'Client supprimé avec succès!');
     }
 
+     public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:5120',
+        ]);
 
+        try {
+            DB::transaction(function () use ($request) {
+                Excel::import(new ClientsImport, $request->file('file'));
+            });
+        } catch (InvalidArgumentException $exception) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['file' => $exception->getMessage()]);
+        }
+
+        return redirect()->route('clients.index')
+            ->with('success', 'Clients importés avec succès.');
+    }
 }
