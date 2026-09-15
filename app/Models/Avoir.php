@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToEntreprise;
 use Illuminate\Database\Eloquent\Model;
 
 class Avoir extends Model
 {
+    use BelongsToEntreprise;
+
     protected $fillable = [
         'numero_avoir',
         'client_id',

@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToEntreprise;
 use Illuminate\Database\Eloquent\Model;
 
-
 class ReglementFournisseur extends Model{
-    
+    use BelongsToEntreprise;
+
     protected $table = 'reglements_fournisseurs';
     protected $fillable = [
         'fournisseur_id',

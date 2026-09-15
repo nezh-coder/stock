@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToEntreprise;
 use Illuminate\Database\Eloquent\Model;
 
 class Achat extends Model
 {
+    use BelongsToEntreprise;
+
     protected $fillable = [
         'numero_achat',
         'fournisseur_id',

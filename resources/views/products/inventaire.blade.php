@@ -68,8 +68,8 @@
                                 <div class="form-group">
                                     <select name="stock_status" class="form-control">
                                         <option value="">Tous les statuts</option>
-                                        <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>En Stock (>10)</option>
-                                        <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>Stock Faible (1-10)</option>
+                                        <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>En Stock </option>
+                                        <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>Stock Faible</option>
                                         <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Rupture de Stock</option>
                                     </select>
                                 </div>

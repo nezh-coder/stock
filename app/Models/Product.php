@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToEntreprise;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-   /// use HasFactory;
+    use BelongsToEntreprise;
 
     protected $fillable = [
         'name',
@@ -15,8 +16,25 @@ class Product extends Model
         'unit_price',
         'min_qte',
         'category_id',
-         'unite_id'
+        'unite_id',
     ];
+
+    protected static function booted(): void
+    {
+        parent::booted();
+
+        static::saving(function ($model) {
+            if (! $model->category_id) {
+                return;
+            }
+
+            $category = Category::withoutGlobalScopes()->find($model->category_id);
+
+            if ($category && $category->entreprise_id !== static::currentEntrepriseId()) {
+                throw new \RuntimeException('La catégorie sélectionnée n\'appartient pas à votre entreprise.');
+            }
+        });
+    }
 
     public function devis()
     {
@@ -31,7 +49,7 @@ class Product extends Model
         return $this->belongsTo(Unite::class);
     }
     public function achatProducts()
-{
-    return $this->hasMany(AchatProduct::class, 'product_id');
-}
+    {
+        return $this->hasMany(AchatProduct::class, 'product_id');
+    }
 }

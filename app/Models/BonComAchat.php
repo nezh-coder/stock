@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToEntreprise;
 use Illuminate\Database\Eloquent\Model;
 
 class BonComAchat extends Model
 {
+    use BelongsToEntreprise;
+
     protected $fillable = [
         'numero_bc_achat',
         'num',

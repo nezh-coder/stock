@@ -186,11 +186,11 @@ class ProductController extends Controller
         if ($request->has('stock_status') && !empty($request->stock_status)) {
             switch ($request->stock_status) {
                 case 'in_stock':
-                    $query->where('quantity', '>', 10);
+                    $query->where('quantity', '>', 0);
                     break;
                 case 'low_stock':
-                    $query->where('quantity', '>', 0)->where('quantity', '<=', 10);
-                    break;
+                    $query->whereColumn('quantity', '<', 'min_qte')->where('quantity', '>', 0);
+                     break;
                 case 'out_of_stock':
                     $query->where('quantity', 0);
                     break;
@@ -202,7 +202,7 @@ class ProductController extends Controller
         // Statistics
         $totalProducts = Product::count();
         $totalValue = Product::sum(\DB::raw('quantity * unit_price'));
-        $lowStockCount = Product::where('quantity', '>', 0)->where('quantity', '<=', 10)->count();
+        $lowStockCount = Product::whereColumn('quantity', '<', 'min_qte')->where('quantity', '>', 0)->count();
         $outOfStockCount = Product::where('quantity', 0)->count();
 
         // Handle export

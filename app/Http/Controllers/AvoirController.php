@@ -8,6 +8,7 @@ use App\Models\BonLivraison;
 use App\Models\Facture;
 use App\Models\Entreprise;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class AvoirController extends Controller
@@ -119,8 +120,11 @@ class AvoirController extends Controller
             'notes' => $request->notes,
         ]);
 
+        $entrepriseId = Auth::user()?->entreprise_id;
+
         foreach ($request->products as $product) {
             $avoir->products()->attach($product['product_id'], [
+                'entreprise_id' => $entrepriseId,
                 'quantity' => $product['quantity'],
                 'unit_price' => $product['unit_price'],
                 'total' => $product['quantity'] * $product['unit_price'],
@@ -209,10 +213,12 @@ class AvoirController extends Controller
 
         // Remove old products and add new ones
         $avoir->products()->detach();
+        $entrepriseId = Auth::user()?->entreprise_id;
         
         foreach ($request->products as $product) {
             $newProductIds[] = $product['product_id'];
             $avoir->products()->attach($product['product_id'], [
+                'entreprise_id' => $entrepriseId,
                 'quantity' => $product['quantity'],
                 'unit_price' => $product['unit_price'],
                 'total' => $product['quantity'] * $product['unit_price'],

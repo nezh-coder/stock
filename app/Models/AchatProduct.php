@@ -1,10 +1,13 @@
 <?php
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToEntreprise;
 use Illuminate\Database\Eloquent\Model;
 
 class AchatProduct extends Model
 {
+    use BelongsToEntreprise;
+
     protected $table = 'achat_products';
 
     protected $fillable = [

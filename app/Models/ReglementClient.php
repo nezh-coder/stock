@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToEntreprise;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ReglementClient extends Model
 {
-    use HasFactory;
+    use BelongsToEntreprise, HasFactory;
 
     protected $fillable = [
         'numero', 'client_id', 'date_reglement', 'montant',

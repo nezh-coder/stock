@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\BonCommande;
 use App\Models\Entreprise;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Helpers\ChiffresEnLettres;
@@ -126,6 +127,8 @@ class DevisController extends Controller
         $numero_devis = str_pad($request->num, 2, '0', STR_PAD_LEFT)
                     . '/' .
                     substr($request->annee, -2);
+        $entrepriseId = Auth::user()?->entreprise_id;
+
         $devis = Devis::create([
             'annee' =>$request->annee,
             'num' => $request->num,
@@ -141,6 +144,7 @@ class DevisController extends Controller
 
         foreach ($request->products as $product) {
             $devis->products()->attach($product['product_id'], [
+                'entreprise_id' => $entrepriseId,
                 'quantity' => $product['quantity'],
                 'unit_price' => $product['unit_price'],
                 'total' => $product['quantity'] * $product['unit_price'],
@@ -197,9 +201,11 @@ class DevisController extends Controller
          $devi->update($data);
          // 🔄 Sync produits
     $syncData = [];
+    $entrepriseId = Auth::user()?->entreprise_id;
 
     foreach ($request->products as $product) {
         $syncData[$product['product_id']] = [
+            'entreprise_id' => $entrepriseId,
             'quantity' => $product['quantity'],
             'unit_price' => $product['unit_price'],
             'total' => $product['quantity'] * $product['unit_price'],
@@ -243,8 +249,11 @@ class DevisController extends Controller
             'notes' => $devis->notes,
         ]);
 
+        $entrepriseId = Auth::user()?->entreprise_id;
+
         foreach ($devis->products as $product) {
             $bonCommande->products()->attach($product->id, [
+                'entreprise_id' => $entrepriseId,
                 'quantity' => $product->pivot->quantity,
                 'unit_price' => $product->pivot->unit_price,
                 'total' => $product->pivot->total,

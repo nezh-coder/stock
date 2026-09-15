@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BonLivraison;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Client;
 use App\Models\Entreprise;
 use App\Models\Product;
@@ -117,8 +118,10 @@ class BonLivraisonController extends Controller
 
         // Attach products
         if ($request->has('products')) {
+            $entrepriseId = Auth::user()?->entreprise_id;
             foreach ($request->products as $productData) {
                 $bon->products()->attach($productData['product_id'], [
+                    'entreprise_id' => $entrepriseId,
                     'quantity' => $productData['quantity'],
                     'unit_price' => $productData['unit_price'],
                     'total' => $productData['quantity'] * $productData['unit_price'],
@@ -192,8 +195,10 @@ class BonLivraisonController extends Controller
 
         // Attach new products and decrease quantities
         if ($request->has('products')) {
+            $entrepriseId = Auth::user()?->entreprise_id;
             foreach ($request->products as $productData) {
                 $bonLivraison->products()->attach($productData['product_id'], [
+                    'entreprise_id' => $entrepriseId,
                     'quantity' => $productData['quantity'],
                     'unit_price' => $productData['unit_price'],
                     'total' => $productData['quantity'] * $productData['unit_price'],
@@ -247,8 +252,11 @@ class BonLivraisonController extends Controller
             'notes' => $bonLivraison->notes,
         ]);
 
+        $entrepriseId = Auth::user()?->entreprise_id;
+
         foreach ($bonLivraison->products as $product) {
             $facture->products()->attach($product->id, [
+                'entreprise_id' => $entrepriseId,
                 'quantity' => $product->pivot->quantity,
                 'unit_price' => $product->pivot->unit_price,
                 'total' => $product->pivot->total,
