@@ -11,6 +11,10 @@
     $data = file_get_contents($path);
     $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
+    if (!empty($branding['background'])) {
+        $base64 = $branding['background'];
+    }
+
 
 @endphp
 <!DOCTYPE html>
@@ -18,6 +22,7 @@
 <head>
 <meta charset="utf-8">
 <style>
+:root { --document-primary: {{ $branding['primary'] ?? '#315EFB' }}; --document-secondary: {{ $branding['secondary'] ?? '#64748B' }}; }
 /* PAGE */
 @page {
     margin: 120px 40px 100px 40px;
@@ -44,7 +49,7 @@ body {
     font-size: 18px;
     margin-left: 20px;
     font-weight: bold;
-    color: #071380;
+    color: var(--document-primary);
 }
 
 .header .subtitle {
@@ -57,7 +62,7 @@ body {
 
 /* FIELDSET / CARD */
 .card {
-    border: 1px solid #087df1;
+    border: 1px solid var(--document-primary);
     border-radius: 6px;
     padding: 10px 12px;
     margin-bottom: 10px;
@@ -67,7 +72,7 @@ body {
 .card legend {
     font-size: 13px;
     font-weight: bold;
-    color: #087df1;
+    color: var(--document-primary);
     padding: 0 6px;
 }
 
@@ -86,7 +91,7 @@ body {
 }
 
 .table-devis th {
-    background: #071380;
+    background: var(--document-primary);
     color: #fff;
     font-size: 12px;
     padding: 8px;
@@ -102,7 +107,7 @@ body {
     background: #f4f6fa;
 }
 .table-devis tbody tr {
-    border-bottom: 1px solid #03488d; /* couleur bleu foncé comme ton header */
+    border-bottom: 1px solid var(--document-secondary);
 }
 .text-right {
     text-align: right;
@@ -146,6 +151,7 @@ body {
 
 <!-- HEADER -->
 <div class="header">
+    @if(!empty($branding['logo']))<div style="text-align: {{ $branding['logo_position'] }};"><img src="{{ $branding['logo'] }}" style="max-height:55px; max-width:180px;"></div>@endif
     <div class="title">DEVIS N° {{ $devi->numero_devis }}</div>
     <div class="subtitle">Date : {{ $devi->date_devis->format('d/m/Y') }}</div>
 </div>

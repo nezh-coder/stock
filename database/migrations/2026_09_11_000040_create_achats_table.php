@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('achats', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('entreprise_id');
+            $table->unsignedBigInteger('entreprise_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('numero_achat');
             $table->unsignedInteger('num');

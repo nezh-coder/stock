@@ -255,7 +255,7 @@ class AchatController extends Controller
 
     public function pdf(Achat $Achat)
         { 
-           $entreprise = Entreprise::first();
+           $entreprise = auth()->user()->entreprise;
             // Charger le fournisseur avec le devis
             $Achat->load('fournisseur');
             $fournisseur = $Achat->fournisseur;

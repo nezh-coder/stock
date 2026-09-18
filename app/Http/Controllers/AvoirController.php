@@ -10,6 +10,7 @@ use App\Models\Entreprise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\DocumentBrandingService;
 
 class AvoirController extends Controller
 {
@@ -78,6 +79,11 @@ class AvoirController extends Controller
      */
     public function store(Request $request)
     {
+        $limits = app(\App\Services\SaasLimitService::class);
+        if (! $limits->canCreate('avoirs')) {
+            return back()->withInput()->with('error', $limits->message('avoirs'));
+        }
+
         $request->validate([
             'client_id' => 'required|exists:clients,id',
             'bon_livraison_id' => 'nullable|exists:bon_livraisons,id',
@@ -107,6 +113,7 @@ class AvoirController extends Controller
         $numero_avoir = 'AV' . str_pad($nextNum, 3, '0', STR_PAD_LEFT) . '/' . substr($annee, -2);
 
         $avoir = Avoir::create([
+            'entreprise_id' => auth()->user()->entreprise_id,
             'numero_avoir' => $numero_avoir,
             'client_id' => $request->client_id,
             'bon_livraison_id' => $request->bon_livraison_id,
@@ -257,13 +264,14 @@ class AvoirController extends Controller
     /**
      * Generate PDF for avoir
      */
-    public function pdf(Avoir $avoir)
+    public function pdf(Avoir $avoir, DocumentBrandingService $brandingService)
     {
         $avoir->load(['client', 'bonLivraison', 'facture', 'products']);
-        $entreprise = Entreprise::first();
+        $entreprise = auth()->user()->entreprise;
+        $branding = $brandingService->for($entreprise);
         $client = $avoir->client;
 
-        $pdf = Pdf::loadView('avoirs.pdf.pdf', compact('avoir', 'entreprise', 'client'))
+        $pdf = Pdf::loadView('avoirs.pdf.pdf', compact('avoir', 'entreprise', 'client', 'branding'))
             ->setPaper('A4');
 
         return $pdf->stream('avoir_' . $avoir->id . '.pdf');

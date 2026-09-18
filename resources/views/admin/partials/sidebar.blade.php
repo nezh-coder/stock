@@ -92,6 +92,20 @@
             <p>Avoirs</p>
           </a>
         </li>
+
+        <li class="nav-header">ESPACE ENTREPRISE</li>
+        <li class="nav-item">
+          <a href="{{ route('enterprise.settings.edit') }}" class="nav-link {{ request()->routeIs('enterprise.settings.*') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-building"></i>
+            <p>Paramètres entreprise</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ route('subscription.show') }}" class="nav-link {{ request()->routeIs('subscription.*') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-crown"></i>
+            <p>Mon abonnement</p>
+          </a>
+        </li>
       </ul>
     </nav>
     <!-- /.sidebar-menu -->

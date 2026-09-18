@@ -11,6 +11,10 @@
     $data = file_get_contents($path);
     $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
+    if (!empty($branding['background'])) {
+        $base64 = $branding['background'];
+    }
+
 
 @endphp
 <!DOCTYPE html>
@@ -18,6 +22,7 @@
 <head>
 <meta charset="utf-8">
 <style>
+:root { --document-primary: {{ $branding['primary'] ?? '#315EFB' }}; --document-secondary: {{ $branding['secondary'] ?? '#64748B' }}; }
 /* PAGE */
 @page {
     size: A5 portrait;
@@ -156,6 +161,7 @@ body {
 
 <!-- HEADER -->
 <div class="header">
+    @if(!empty($branding['logo']))<div style="text-align: {{ $branding['logo_position'] }};"><img src="{{ $branding['logo'] }}" style="max-height:55px; max-width:180px;"></div>@endif
     <div class="title">DEVIS N° {{ $devi->numero_devis }}</div>
     <div class="subtitle">Date : {{ $devi->date_devis->format('d/m/Y') }}</div>
 </div>

@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('unites', function (Blueprint $table) {
             $table->unsignedInteger('id')->autoIncrement();
-            $table->unsignedInteger('entreprise_id');
+            $table->unsignedBigInteger('entreprise_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('name', 50);
 

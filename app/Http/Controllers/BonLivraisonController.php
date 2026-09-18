@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\BonCommande;
 use App\Models\Facture;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\DocumentBrandingService;
 use Carbon\Carbon;
 
 class BonLivraisonController extends Controller
@@ -87,6 +88,11 @@ class BonLivraisonController extends Controller
      */
     public function store(Request $request)
     { 
+        $limits = app(\App\Services\SaasLimitService::class);
+        if (! $limits->canCreate('bon_livraisons')) {
+            return back()->withInput()->with('error', $limits->message('bon_livraisons'));
+        }
+
         $request->validate([
             'num' => 'required|numeric',
             'annee' => 'required|integer',
@@ -103,6 +109,7 @@ class BonLivraisonController extends Controller
                     . '/' .
                     substr($request->annee, -2);
         $bon = BonLivraison::create([
+            'entreprise_id' => auth()->user()->entreprise_id,
             'annee' =>$request->annee,
             'num' => $request->num,
              'numero_bon_livraison' => $numero_bon_livraison,
@@ -268,14 +275,15 @@ class BonLivraisonController extends Controller
         return redirect()->route('factures.index')->with('success', 'Bon de livraison transféré en facture avec succès!');
     }
 
-    public function pdf(BonLivraison $BonLivraison)
+    public function pdf(BonLivraison $BonLivraison, DocumentBrandingService $brandingService)
         { 
-           $entreprise = Entreprise::first();
+           $entreprise = auth()->user()->entreprise;
+           $branding = $brandingService->for($entreprise);
             // Charger le client avec le devis
             $BonLivraison->load('client');
             $client = $BonLivraison->client;
            
-            $pdf = Pdf::loadView('bon-livraisons.pdf.bl', compact('BonLivraison',  'client', 'entreprise'))
+            $pdf = Pdf::loadView('bon-livraisons.pdf.bl', compact('BonLivraison',  'client', 'entreprise', 'branding'))
     ->setPaper('a4', 'portrait')
     ->setOptions([
         'isRemoteEnabled' => true,

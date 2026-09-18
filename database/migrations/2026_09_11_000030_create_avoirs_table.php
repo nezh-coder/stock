@@ -9,9 +9,11 @@ return new class extends Migration {
     {
         Schema::create('avoirs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('entreprise_id');
+            $table->unsignedBigInteger('entreprise_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('numero_avoir');
+             $table->unsignedInteger('num');
+            $table->year('annee');
             $table->foreignId('client_id')->constrained('clients')->restrictOnDelete();
             $table->foreignId('bon_livraison_id')->nullable()->constrained('bon_livraisons')->nullOnDelete();
             $table->foreignId('facture_id')->nullable()->constrained('factures')->nullOnDelete();

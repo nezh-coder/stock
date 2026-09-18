@@ -11,6 +11,10 @@
     $data = file_get_contents($path);
     $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
+    if (!empty($branding['background'])) {
+        $base64 = $branding['background'];
+    }
+
 
 @endphp
 <!DOCTYPE html>
@@ -18,6 +22,7 @@
 <head>
 <meta charset="utf-8">
 <style>
+:root { --document-primary: {{ $branding['primary'] ?? '#315EFB' }}; --document-secondary: {{ $branding['secondary'] ?? '#64748B' }}; }
 /* PAGE */
 @page {
     margin: 120px 40px 100px 40px;
@@ -146,6 +151,7 @@ body {
 
 <!-- HEADER -->
 <div class="header">
+    @if(!empty($branding['logo']))<div style="text-align: {{ $branding['logo_position'] }};"><img src="{{ $branding['logo'] }}" style="max-height:55px; max-width:180px;"></div>@endif
     <div class="title">FACTURE N°: {{ $facture->numero_facture }}</div>
    <div class="subtitle">
     Date : {{ $facture->date_facture ? \Carbon\Carbon::parse($facture->date_facture)->format('d/m/Y') : '-' }}

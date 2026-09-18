@@ -12,7 +12,7 @@ return new class extends Migration {
         // donc aucune FK bon_reception_id n'est créée ici.
         Schema::create('reglement_bon_reception', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('entreprise_id');
+            $table->unsignedBigInteger('entreprise_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('reglement_id');
             $table->unsignedBigInteger('bon_reception_id');

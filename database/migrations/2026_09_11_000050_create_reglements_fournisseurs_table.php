@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('reglements_fournisseurs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('entreprise_id');
+            $table->unsignedBigInteger('entreprise_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreignId('fournisseur_id')->constrained('fournisseurs')->restrictOnDelete();
             $table->decimal('montant', 15, 2);

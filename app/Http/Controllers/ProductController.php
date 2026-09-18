@@ -84,6 +84,11 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        $limits = app(\App\Services\SaasLimitService::class);
+        if (! $limits->canCreate('products')) {
+            return back()->withInput()->with('error', $limits->message('products'));
+        }
+
         $request->validate([
             'name' => 'required|unique:products,name',
             'description' => 'nullable|string',
@@ -95,6 +100,7 @@ class ProductController extends Controller
         ]);
 
         Product::create([
+            'entreprise_id' => auth()->user()->entreprise_id,
             'name' => $request->name,
             'description' => $request->description,
             'min_qte' => $request->min_qte,

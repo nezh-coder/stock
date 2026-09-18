@@ -7,6 +7,8 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
     <link rel="icon" href="{{ asset('favicon.ICO') }}">
 </head>
 <body>
@@ -90,17 +92,8 @@ function togglePassword() {
 </body>
 </html>
 <style>
-.password-wrapper {
-    position: relative;
-    width: 100%;
-}
-
-.password-wrapper input {
-    width: 100%;
-    padding-right: 45px;
-    box-sizing: border-box;
-}
-
+.password-wrapper { position: relative; width: 100%; } 
+.password-wrapper input { width: 100%; box-sizing: border-box; /* Important : même taille dans les deux états */ padding-right: 45px; } /* Bouton de l'œil */
 .toggle-password {
     position: absolute;
     right: 10px;
@@ -120,4 +113,7 @@ function togglePassword() {
 .toggle-password:hover {
     color: #222;
 }
+/* Bouton de l'œil */ .password-wrapper .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); /* Empêche le CSS global des boutons d'interférer */ width: 30px !important; height: 30px !important; min-width: 30px !important; min-height: 30px !important; max-width: 30px !important; max-height: 30px !important;padding: 0 !important; margin: 0 !important; border: none !important; outline: none; background: transparent !important; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #666; /* Important */ line-height: 1 !important; font-size: 16px !important; }
+/* Icône */ .password-wrapper .toggle-password i { font-size: 16px !important; line-height: 1 !important; width: auto !important; height: auto !important; } /* Hover */ .password-wrapper .toggle-password:hover { color: #222; background: transparent !important; }
+/* Focus */ .password-wrapper .toggle-password:focus { outline: none !important; box-shadow: none !important; }
 </style>

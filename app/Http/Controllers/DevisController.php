@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Helpers\ChiffresEnLettres;
+use App\Services\DocumentBrandingService;
 
 class DevisController extends Controller
 {
@@ -21,13 +22,14 @@ class DevisController extends Controller
             return view('devis.print', compact('devi'));
         }
 
-        public function pdf(Devis $devi)
+        public function pdf(Devis $devi, DocumentBrandingService $brandingService)
         {
-            $entreprise = Entreprise::first();
+            $entreprise = auth()->user()->entreprise;
+            $branding = $brandingService->for($entreprise);
             // Charger le client avec le devis
             $devi->load('client');
             $client = $devi->client;
-            $pdf = Pdf::loadView('devis.pdf.devis', compact('devi', 'entreprise', 'client'))
+            $pdf = Pdf::loadView('devis.pdf.devis', compact('devi', 'entreprise', 'client', 'branding'))
     ->setPaper('a4', 'portrait')
     ->setOptions([
         'isRemoteEnabled' => true,
@@ -35,13 +37,14 @@ class DevisController extends Controller
 
         return $pdf->stream('devis_'.$devi->id.'.pdf');
              }
-    public function a5(Devis $devi)
+    public function a5(Devis $devi, DocumentBrandingService $brandingService)
         {
-            $entreprise = Entreprise::first();
+            $entreprise = auth()->user()->entreprise;
+            $branding = $brandingService->for($entreprise);
             // Charger le client avec le devis
             $devi->load('client');
             $client = $devi->client;
-            $pdf = Pdf::loadView('devis.pdf.a5', compact('devi', 'entreprise', 'client'))
+            $pdf = Pdf::loadView('devis.pdf.a5', compact('devi', 'entreprise', 'client', 'branding'))
     ->setPaper('a5', 'portrait')
     ->setOptions([
         'isRemoteEnabled' => true,
@@ -103,6 +106,10 @@ class DevisController extends Controller
      */
     public function store(Request $request)
     {
+        $limits = app(\App\Services\SaasLimitService::class);
+        if (! $limits->canCreate('devis')) {
+            return back()->withInput()->with('error', $limits->message('devis'));
+        }
        
         $request->validate([
             'num' => 'required|numeric',
@@ -130,6 +137,7 @@ class DevisController extends Controller
         $entrepriseId = Auth::user()?->entreprise_id;
 
         $devis = Devis::create([
+            'entreprise_id' => $entrepriseId,
             'annee' =>$request->annee,
             'num' => $request->num,
              'numero_devis' => $numero_devis,

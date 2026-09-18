@@ -57,6 +57,11 @@ class BonCommandeController extends Controller
      */
     public function store(Request $request)
     {
+        $limits = app(\App\Services\SaasLimitService::class);
+        if (! $limits->canCreate('bon_commandes')) {
+            return back()->withInput()->with('error', $limits->message('bon_commandes'));
+        }
+
         $annee = Carbon::now()->year;
         $nextNum = BonCommande::count() + 1;
         $numero_bon_commande = 'BC' . str_pad($nextNum, 3, '0', STR_PAD_LEFT) . '/' . substr($annee, -2);
@@ -72,6 +77,7 @@ class BonCommandeController extends Controller
         ]);
 
         $bonCommande = BonCommande::create([
+            'entreprise_id' => auth()->user()->entreprise_id,
             'num' => $nextNum,
             'annee' => $annee,
             'numero_bon_commande' => $numero_bon_commande,

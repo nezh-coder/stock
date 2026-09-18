@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('retours', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('entreprise_id')->nullable();
+            $table->unsignedBigInteger('entreprise_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
 

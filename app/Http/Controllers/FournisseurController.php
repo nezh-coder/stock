@@ -42,6 +42,11 @@ class FournisseurController extends Controller
     }
      public function store(Request $request)
     { 
+        $limits = app(\App\Services\SaasLimitService::class);
+        if (! $limits->canCreate('fournisseurs')) {
+            return back()->withInput()->with('error', $limits->message('fournisseurs'));
+        }
+
         $request->validate([
               'name' => 'required|string',
             'tel' => 'required|string',
@@ -52,6 +57,7 @@ class FournisseurController extends Controller
         ]);
 
         Fournisseur::create([
+            'entreprise_id' => auth()->user()->entreprise_id,
             'name' => $request->name,
             'tel' => $request->tel,
             'email' => $request->email,

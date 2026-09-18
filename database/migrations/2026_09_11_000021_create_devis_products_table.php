@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('devis_products', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('entreprise_id');
+            $table->unsignedBigInteger('entreprise_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreignId('devis_id')->constrained('devis')->cascadeOnDelete();
             $table->foreignId('product_id')->constrained('products')->restrictOnDelete();

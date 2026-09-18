@@ -7,6 +7,7 @@ use App\Models\Entreprise;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\DocumentBrandingService;
 
 class FactureController extends Controller
 {
@@ -54,6 +55,11 @@ class FactureController extends Controller
      */
     public function store(Request $request)
     {
+        $limits = app(\App\Services\SaasLimitService::class);
+        if (! $limits->canCreate('factures')) {
+            return back()->withInput()->with('error', $limits->message('factures'));
+        }
+
         $request->validate([
             'numero_facture' => 'required|string|unique:factures',
             'client_id' => 'required|exists:clients,id',
@@ -66,7 +72,7 @@ class FactureController extends Controller
             'status' => 'required|in:non_payee,partiellement_paye,payee,annulee',
         ]);
 
-        Facture::create($request->all());
+        Facture::create($request->only(['numero_facture', 'client_id', 'bon_livraison_id', 'date_facture', 'date_echeance', 'total_ht', 'tva', 'total_ttc', 'status', 'notes']) + ['entreprise_id' => auth()->user()->entreprise_id]);
 
         return redirect()->route('factures.index')->with('success', 'Facture créée avec succès.');
     }
@@ -122,15 +128,16 @@ class FactureController extends Controller
         return redirect()->route('factures.index')->with('success', 'Facture supprimée avec succès.');
     }
 
-    public function pdf(Facture $facture)
+    public function pdf(Facture $facture, DocumentBrandingService $brandingService)
     {
         
             $facture->load(['bonLivraison', 'products']);
              // Charger le client avec le devis
             $facture->load('client');
             $client = $facture->client;
-             $entreprise = Entreprise::first();
-            $pdf = Pdf::loadView('factures.pdf.pdf', compact('facture', 'entreprise', 'client'))
+             $entreprise = auth()->user()->entreprise;
+            $branding = $brandingService->for($entreprise);
+            $pdf = Pdf::loadView('factures.pdf.pdf', compact('facture', 'entreprise', 'client', 'branding'))
                 ->setPaper('A4');
 
             return $pdf->stream('facture'.$facture->id.'.pdf');

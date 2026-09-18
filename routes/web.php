@@ -15,6 +15,8 @@ use App\Http\Controllers\AchatController;
 use App\Http\Controllers\BonComAchatController;
 use App\Http\Controllers\UniteController;
 use App\Http\Controllers\ReglementClientController;
+use App\Http\Controllers\EnterpriseSettingsController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,7 +25,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'subscription'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -109,6 +111,10 @@ Route::post('categories/import', [CategoryController::class, 'import'])
  Route::get('paiements/export/pdf', [\App\Http\Controllers\ReglementClientController::class, 'exportPdf'])->name('paiements.export.pdf');
    
   Route::get('/client/{id}/factures-non-payees', [ReglementClientController::class, 'facturesNonPayees']);
+
+    Route::get('/parametres/entreprise', [EnterpriseSettingsController::class, 'edit'])->name('enterprise.settings.edit');
+    Route::put('/parametres/entreprise', [EnterpriseSettingsController::class, 'update'])->name('enterprise.settings.update');
+    Route::get('/abonnement', [SubscriptionController::class, 'show'])->name('subscription.show');
    
     });
     require __DIR__.'/auth.php';

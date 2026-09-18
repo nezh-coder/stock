@@ -42,6 +42,11 @@ class ClientController extends Controller
     }
      public function store(Request $request)
     { 
+        $limits = app(\App\Services\SaasLimitService::class);
+        if (! $limits->canCreate('clients')) {
+            return back()->withInput()->with('error', $limits->message('clients'));
+        }
+
         $request->validate([
             'name' => 'required|unique:products,name',
             'tel' => 'required|string',
@@ -52,6 +57,7 @@ class ClientController extends Controller
         ]);
 
         Client::create([
+            'entreprise_id' => auth()->user()->entreprise_id,
             'name' => $request->name,
             'tel' => $request->tel,
             'email' => $request->email,

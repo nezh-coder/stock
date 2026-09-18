@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('reglement_facture', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('entreprise_id');
+            $table->unsignedBigInteger('entreprise_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreignId('reglement_id')->constrained('reglement_clients')->cascadeOnDelete();
             $table->foreignId('facture_id')->constrained('factures')->cascadeOnDelete();
